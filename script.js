@@ -1,76 +1,33 @@
-let runningTotal = 0;
-let buffer = "0";
-let previousOperator;
+// Obtener referencias a los elementos HTML
+const display = document.getElementById('pantalla'); // Seleccionar por ID
+const buttons = document.querySelectorAll('.boton'); // Seleccionar botones individuales
 
-const pantalla = document.querySelector('.pantalla');
+// Variable para almacenar la expresión matemática actual
+let expression = '';
 
-function buttonClick(value){
-    if(isNan(value)){
-        handleSymbol(value);
-    }else{
-        handleSymbolNumber(value);
-    }
-    pantalla.innerText = buffer;
-}
+// Agregar un evento click a cada botón
+buttons.forEach(button => {
+    button.addEventListener('click', () => {
+        const value = button.dataset.value;
 
-function handleSymbol(symbol){
-    switch(symbol){
-        case 'C':
-            buffer = '0'; 
-            runningTotal = 0;
-            break;
-        case '=':
-            if(previousOperator === null){
-                return
-            }   
-            flushOperation(parseInt(buffer));
-            previousOperator = null;
-            buffer = runningTotal;
-            runningTotal = 0;
-            break;
-        case '←':
-            if(buffer.length === 1){
-                buffer = '0';
-            }else{
-                buffer = buffer.substring(0, buffer.length -1);
+        if (value === '=' && expression !== '') {
+            try {
+                const result = eval(expression); // Precaución con eval
+                display.textContent = result;
+                expression = result.toString(); // Convertir a string
+            } catch (error) {
+                display.textContent = 'Error';
             }
-            break;
-            case'+':
-            case'−':
-            case'×':
-            case'÷':
-                handleMath(symbol);
-                break;
-    }
-}
-
-function handleMath(symbol){
-    if(buffer === '0'){
-        return;
-    }
-
-    const intBuffer = parseInt(buffer);
-
-    if(runningTotal === 0){
-        runningTotal = IntBuffer;
-    }else{
-        flushOperation(IntBuffer);
-    }
-    previousOperator = symbol;
-    buffer = '0';
-    }
-
-    function flushOperation(IntBuffer){
-        if(previousOperator === '+'){
-            runningTotal += IntBuffer;
-        }else if (previousOperator === '−'){
-            runningTotal -= IntBuffer;
-        }else if(previousOperator === '×'){
-            runningTotal *= IntBuffer;
-        }else if(previousOperator === '÷'){
-            runningTotal /= IntBuffer;
+        } else if (value === 'C') {
+            expression = '';
+            display.textContent = '0';
+        } else {
+            expression += value;
+            display.textContent = expression;
         }
-    }
+    });
+});
+
 
     function handleNumber(numberString){
         if (buffer === "0"){
